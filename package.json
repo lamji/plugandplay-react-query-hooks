@@ -1,0 +1,48 @@
+{
+  "name": "plugandplay-react-query-hooks",
+  "version": "1.0.0",
+  "description": "A collection of React hooks and providers for data fetching using React Query, with built-in authentication and alert management",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c --bundleConfigAsCjs",
+    "prepare": "npm run build",
+    "local": "npm version patch --no-git-tag-version && npm run build && npm publish --registry http://localhost:4873/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^4.0.0 || ^5.0.0",
+    "axios": "^1.0.0",
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^24.0.0",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@tanstack/react-query": "^4.29.0",
+    "@types/react": "^18.2.0",
+    "axios": "^1.4.0",
+    "rollup": "^3.0.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.34.0",
+    "typescript": "^4.9.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "react",
+    "hook",
+    "react-query",
+    "data-fetching",
+    "authentication",
+    "alerts",
+    "typescript",
+    "nextjs",
+    "axios"
+  ],
+  "author": "Jick Lampago",
+  "license": "MIT"
+}

@@ -21,12 +21,14 @@ export const createApiClient = (
   token: string,
   enableRefreshToken: boolean = false,
   bearer: boolean,
+  axiosConfig?:any
 ): AxiosInstance => {
   const apiClient = axios.create({
     baseURL: baseUrl,
     headers: {
       'Content-Type': 'application/json',
     },
+    ...axiosConfig
   });
 
   // Request interceptor to add auth token
@@ -139,12 +141,13 @@ export const createApiClient = (
  * @param baseUrl - The base URL for API requests
  * @returns Configured Axios instance without authentication
  */
-export const createUnauthenticatedApiClient = (baseUrl: string): AxiosInstance => {
+export const createUnauthenticatedApiClient = (baseUrl: string, axiosConfig?: any): AxiosInstance => {
   const apiClient = axios.create({
     baseURL: baseUrl,
     headers: {
       'Content-Type': 'application/json',
     },
+    ...axiosConfig
   });
 
   // Basic request interceptor (no auth token)

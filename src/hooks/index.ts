@@ -23,49 +23,31 @@ export type MutationOptions<
 export type QueryParams = Record<string, string | number | boolean | undefined>;
 
 /**
- * Hook for making GET requests with React Query
- * @param baseUrl - Base URL for the API (e.g., 'https://api.example.com')
- * @param endpoint - API endpoint path (e.g., '/users')
- * @param query - Optional query parameters object (e.g., { page: 1, limit: 10 })
- * @param options - React Query options including:
- *   - queryKey: Custom query key for caching (e.g., ['users', { page: 1 }])
- *   - enabled: Boolean to control query execution
- *   - staleTime: Duration in ms before data becomes stale
- *   - ...other React Query options
- * @returns React Query result object with data, isLoading, error, etc.
- * 
- * @example
- * // Basic usage
- * const { data, isLoading } = useGetData<UserType>(
- *   'https://api.example.com',
- *   '/users',
- *   { page: 1 }
- * );
- * 
- * // With custom queryKey and options
- * const { data } = useGetData<UserType>(
- *   'https://api.example.com',
- *   '/users',
- *   { page: 1 },
- *   {
- *     queryKey: ['users', 'list', { page: 1 }],
- *     enabled: true,
- *     staleTime: 5000
- *   }
- * );
+ * Hook for GET requests
+ * @param config - Configuration object containing:
+ *   - baseUrl: Base URL for the API
+ *   - endpoint: API endpoint path
+ *   - query: Optional query parameters
+ *   - axiosConfig: Optional Axios configuration
+ *   - options: Additional options for useQuery
+ * @returns useQuery result object
  */
-export const useGetData = <TData = unknown>(
-  baseUrl: string,
-  endpoint: string,
-  query: QueryParams = {},
-  options: Omit<UseQueryOptions<ApiResponse<TData>, Error, ApiResponse<TData>, any>, "queryFn"> = {}
-) => {
+export const useGetData = <TData = unknown>(config: {
+  baseUrl: string;
+  endpoint: string;
+  query?: QueryParams;
+  axiosConfig?: any;
+  options?: Omit<UseQueryOptions<ApiResponse<TData>, Error, ApiResponse<TData>, any>, "queryFn">;
+}) => {
+  const { baseUrl, endpoint, query = {}, axiosConfig, options = {} } = config;
+
   const { token, refreshToken, bearer } = useAppContext();
   const apiClient = createApiClient(
     baseUrl,
     token || "",
     refreshToken || false,
-    bearer || false
+    bearer || false,
+    axiosConfig
   );
 
   const fetchData = async (): Promise<ApiResponse<TData>> => {
@@ -73,7 +55,7 @@ export const useGetData = <TData = unknown>(
     return response.data;
   };
 
-  return useQuery<ApiResponse<TData>, Error>({    
+  return useQuery<ApiResponse<TData>, Error>({
     queryKey: options.queryKey,
     queryFn: fetchData,
     ...options

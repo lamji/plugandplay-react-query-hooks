@@ -18,6 +18,8 @@ npm install plugandplay-react-query-hooks @tanstack/react-query axios
 yarn add plugandplay-react-query-hooks @tanstack/react-query axios
 ```
 
+
+
 ## Peer Dependencies
 
 - React (^16.8.0 || ^17.0.0 || ^18.0.0)
@@ -27,7 +29,7 @@ yarn add plugandplay-react-query-hooks @tanstack/react-query axios
 ## Basic Usage
 
 ## 1. Create a Provider
-In component create a provider specilay when using next js
+In component create a provider specially when using next js
 
 ```tsx
 'use client'; // For next js
@@ -48,6 +50,18 @@ export default function ReactProvider({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  /**
+   * In this case we use localStorage to persist the token
+   * This allows the token to be available even after a page refresh
+   * You can use whatever storage mechanism you prefer (e.g., sessionStorage, cookies)
+   */
+  const [initialToken, setInitialToken] = useState<string | null>(null);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setInitialToken(token);
+  }, []);
+
   return (
     <Providers bearer={false} queryClient={queryClient}>
       {children}
@@ -132,10 +146,10 @@ function LoginComponent() {
   const { setToken } = useAppContext();
 
   // Use unauthenticated mutation for login endpoint
-  const { mutate: loginMutate, isLoading } = useUnauthenticatedPostData(
-    'https://api.example.com',
-    '/auth/login'
-  );
+  const { mutate: loginMutate, isLoading } = useUnauthenticatedPostData({
+    baseUrl: 'https://api.example.com',
+    endpoint: '/auth/login'
+  });
 
   // On component mount, check localStorage for existing token
   useEffect(() => {
@@ -187,11 +201,12 @@ function LoginComponent() {
 
 ## `useGetData` Hook – Props Table
 
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
+| Config Property | Type | Required | Default | Description |
+|----------------|------|----------|---------|-------------|
 | `baseUrl` | `string` | ✅ Yes | — | Base URL of the API (e.g., `https://api.example.com`). |
 | `endpoint` | `string` | ✅ Yes | — | API endpoint path (e.g., `/users`). |
 | `query` | `Record<string, any>` | ❌ No | `{}` | Optional query parameters object (e.g., `{ page: 1, limit: 10 }`). Passed as `params` in the request. |
+| `axiosConfig` | `AxiosRequestConfig` \| `any` | ❌ No | `{}` | Extra Axios config (e.g., `{ headers, timeout }`). |
 | `options` | `Omit<UseQueryOptions<ApiResponse<TData>, Error, ApiResponse<TData>, any>, "queryFn">` | ❌ No | `{}` | React Query options for customizing the query (except `queryFn`, which is handled internally). Includes:<br/>• `queryKey` – Custom query key for caching (e.g., `['users', { page: 1 }]`)<br/>• `enabled` – Boolean to control if query should run<br/>• `staleTime` – Time in ms before data is considered stale<br/>• Any other supported React Query options |
 
 ---
@@ -210,23 +225,26 @@ Returns a standard **React Query result object**, including:
 
 ```tsx
 // Basic usage
-const { data, isLoading } = useGetData<UserType>(
-  'https://api.example.com',
-  '/users',
-  { page: 1 }
-);
+const { data, isLoading } = useGetData<UserType>({
+  baseUrl: 'https://api.example.com',
+  endpoint: '/users',
+  query: { page: 1 }
+});
 
 // With custom queryKey and options
-const { data } = useGetData<UserType>(
-  'https://api.example.com',
-  '/users',
-  { page: 1 },
-  {
+const { data } = useGetData<UserType>({
+  baseUrl: 'https://api.example.com',
+  endpoint: '/users',
+  query: { page: 1 },
+  axiosConfig: {
+    headers: { 'X-Custom-Header': 'value' }
+  },
+  options: {
     queryKey: ['users', 'list', { page: 1 }],
     enabled: true,
     staleTime: 5000
   }
-);
+});
 ```
 
 ## `usePostData` Hook – Props Table
@@ -601,6 +619,14 @@ function TodoList() {
   );
 }
 ```
+## Versioning
+
+This project follows Semantic Versioning (SemVer).
+
+| Version | Notes |
+|--------:|-------|
+| 1.0.0   | Initial release |
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

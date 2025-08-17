@@ -2,7 +2,7 @@
 
 // This component must be used within client components only
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 interface AppContextType {
   token: string | null;
@@ -59,6 +59,13 @@ export function AppContextProvider({
   const logout = () => {
     setToken(null);
   };
+
+  useEffect(() => {
+
+    if (initialToken) {
+      setToken(initialToken);
+    }
+  }, [initialToken]);
 
   const isAuthenticated = !!token;
 

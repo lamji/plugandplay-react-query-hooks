@@ -205,17 +205,21 @@ export const useUnauthenticatedPostData = <
  * Hook for DELETE requests
  * @param baseUrl - Base URL for the API
  * @param endpoint - API endpoint
+ * @param body - Optional request body data
+ * @param invalidateQueryKey - Query keys to invalidate after success
+ * @param axiosConfig - Additional axios configuration
  * @param options - Additional options for useMutation
  * @returns useMutation result object
  */
-export const useDeleteData = <TData = unknown>(config: {
+export const useDeleteData = <TData = unknown, TBody = void>(config: {
   baseUrl: string;
   endpoint: string;
+  body?: TBody;
   invalidateQueryKey?: string | string[];
   axiosConfig?: any;
   options?: MutationOptions<ApiResponse<TData>, Error, void>;
 }) => {
-  const { baseUrl, endpoint, invalidateQueryKey, axiosConfig, options = {} } = config;
+  const { baseUrl, endpoint, body, invalidateQueryKey, axiosConfig, options = {} } = config;
 
   const { token, refreshToken, bearer } = useAppContext();
   const queryClient = useQueryClient();
@@ -228,7 +232,7 @@ export const useDeleteData = <TData = unknown>(config: {
   );
 
   const deleteData = async (): Promise<ApiResponse<TData>> => {
-    const response = await apiClient.delete(endpoint);
+    const response = await apiClient.delete(endpoint, { data: body });
     return response.data;
   };
 

@@ -1,6 +1,6 @@
 {
   "name": "plugandplay-react-query-hooks",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A collection of React hooks and providers for data fetching using React Query, with built-in authentication and alert management",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
